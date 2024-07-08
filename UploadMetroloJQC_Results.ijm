@@ -102,7 +102,6 @@ for (r=0; r<RawFilePaths.length; r++){
 	roiManager("reset");
 	run("Clear Results");
 	csvPath=dir_proc+ExperimentName+Raw_Names[r]+sep+"beadCoordinates.xls";
-	
 	lineseparator = "\n";
 	cellseparator = "\t";
 
@@ -225,6 +224,8 @@ function FindRawFileNames(dir, countRaw) {
 		if (endsWith(list[i], ".tif") ||endsWith(list[i], ".tiff")||endsWith(list[i], ".czi")||endsWith(list[i], ".nd2")){
 			list[i]=replace(list[i], ".tif", "");
 			list[i]=replace(list[i], ".tiff", "");
+			list[i]=replace(list[i], ".czi", "");
+			list[i]=replace(list[i], ".nd2", "");
 			Raw_Names[n]=list[i];
 			showProgress(n++, countRaw);
 		}
