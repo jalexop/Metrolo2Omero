@@ -188,7 +188,7 @@ function countRawFiles(dir) {
 	countRaw = 0;
    list = getFileList(dir);
    for (i=0; i<list.length; i++) {
-       if (endsWith(list[i], ".tif") ||endsWith(list[i], ".tiff")){
+       if (endsWith(list[i], ".tif") ||endsWith(list[i], ".tiff")||endsWith(list[i], ".czi")||endsWith(list[i], ".nd2")){
 	       countRaw++;
        }
    }
