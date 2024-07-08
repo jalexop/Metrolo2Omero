@@ -208,7 +208,7 @@ function FindRawFilePaths(dir, countRaw) {
 	list = getFileList(dir);
 	n=0;
 	for (i=0; i<list.length; i++) {
-		if (endsWith(list[i], ".tif") ||endsWith(list[i], ".tiff")){
+		if (endsWith(list[i], ".tif") ||endsWith(list[i], ".tiff")||endsWith(list[i], ".czi")||endsWith(list[i], ".nd2")){
 			RawFilePaths[n] = dir+list[i];
 			showProgress(n++, countRaw);
 		}
@@ -222,7 +222,7 @@ function FindRawFileNames(dir, countRaw) {
 	list = getFileList(dir);
 	n=0;
 	for (i=0; i<list.length; i++) {
-		if (endsWith(list[i], ".tif") ||endsWith(list[i], ".tiff")){
+		if (endsWith(list[i], ".tif") ||endsWith(list[i], ".tiff")||endsWith(list[i], ".czi")||endsWith(list[i], ".nd2")){
 			list[i]=replace(list[i], ".tif", "");
 			list[i]=replace(list[i], ".tiff", "");
 			Raw_Names[n]=list[i];
