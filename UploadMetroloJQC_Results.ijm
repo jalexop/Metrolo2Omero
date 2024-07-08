@@ -29,8 +29,15 @@
  * 
  * Running the script:
  */
-
-requires("1.33s"); 
+requires("1.54f");
+//			 Dependencies
+// Tested with the latest versions of plugings as mentioned in:
+// https://github.com/GReD-Clermont/simple-omero-client
+// and
+// https://github.com/GReD-Clermont/omero_macro-extensions
+// as well as the latest version of Omero.insight plugin:
+//https://www.openmicroscopy.org/omero/downloads/
+//
 run("OMERO Extensions");
 sep=File.separator;
 dir=dir+sep;
@@ -48,21 +55,45 @@ lineseparator = "\n";
 summaryLines=split(File.openAsString(dir_proc+ExperimentName+"summary.xls"), lineseparator);
 
 succesfulConnectionOmero=Ext.connectToOMERO(omrsrv, omrport, omrusr, omrpwd);
-
+if (succesfulConnectionOmero){
+	print("\\Clear");
+	print ("################### Connection to Omero and Project / Dataset Management ################");
+	print ("Succesfully Connected to Omero Server "+omrsrv+" on port "+omrport+" for user "+omrusr+"");
+}else{
+	exit("Cannot connect to Omero Server "+omrsrv+" on port "+omrport+" for user "+omrusr+"");
+}
+ListForUser=Ext.listForUser(omrusr);
 oldProject=Ext.list("Project", omrProject);
 if(oldProject!=""){
 	ProjectID=oldProject;
+	print("Project with ID "+ProjectID+" and name "+Ext.getName("Project", ProjectID)+" already exists and will be used.");
 }else{
 	ProjectID=Ext.createProject(omrProject, "Project for Uploading MetroloJ QC PSF Results");
+	print("New project with ID "+ProjectID+" and name "+Ext.getName("Project", ProjectID)+" created.");
 }
-oldDataset=Ext.list("Dataset", datasetName);
-//print(oldDataset);
-if(oldDataset!=""){
-	DatasetID=oldDataset;
-}else{
+ExistingDatasets=split(Ext.list("Dataset", "Project", ProjectID), ",");
+foundDataset=false;
+if(ExistingDatasets.length == 0){
 	DatasetID=Ext.createDataset(datasetName, "", ProjectID);
+	print("Dataset with ID "+DatasetID+ " and name "+Ext.getName("Dataset", DatasetID)+" created under project "+Ext.getName("Project", ProjectID)+" .");
+}else{
+	for(w=0;w<ExistingDatasets.length;w++){
+		checkedDatasetName=Ext.getName("Dataset", ExistingDatasets[w]);
+		if(checkedDatasetName== datasetName){
+			DatasetID=ExistingDatasets[w];
+			foundDataset=true;
+		}
+	}
+	if(foundDataset){
+		print("Dataset with ID "+DatasetID+ " and name "+Ext.getName("Dataset", DatasetID)+" already exists under project "+Ext.getName("Project", ProjectID)+" and will be used.");
+	}else{
+		DatasetID=Ext.createDataset(datasetName, "", ProjectID);
+		print("Dataset with ID "+DatasetID+ " and name "+Ext.getName("Dataset", DatasetID)+" created under project "+Ext.getName("Project", ProjectID)+" .");
+	}
 }
-//print(DatasetID);
+print("");
+print("");
+print("Start with raw files....");
 run("Clear Results");
 AnalysedBeads=false;
 for (r=0; r<RawFilePaths.length; r++){
@@ -145,6 +176,7 @@ summaryPDF_ID=Ext.addFile("Dataset", DatasetID, dir_proc+ExperimentName+"summary
 
 Ext.disconnect();
 setBatchMode(false);
+print("Finished...!");
 
 
 // FUNCTIONS
