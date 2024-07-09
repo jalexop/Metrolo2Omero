@@ -39,7 +39,6 @@
  * 
  */
 requires("1.54f");
-Macro_version=1.3;
 if(batch){
 	setBatchMode(true);
 }
@@ -114,11 +113,12 @@ for (r=0; r<RawFilePaths.length; r++){
 	selectImage(img);
 	rename(Raw_Names[r]);
 	//The raw Image will be uploaded to Omero
-	ImageID=Ext.importImage(DatasetID);
-	print("Import to Omero for image ID " + ImageID + ": " +Raw_Names[r]);
+//	ImageID=Ext.importImage(DatasetID);
+//	print("Import to Omero for image ID " + ImageID + ": " +Raw_Names[r]);
 
 	// Finds Coordinates of beads and makes rois
 	csvPath=dir_proc+ExperimentName+Raw_Names[r]+sep+"beadCoordinates.xls";
+//	print(csvPath);
 	lines=split(File.openAsString(csvPath), lineseparator);
 	resultsCounter=0;
 	for (i=0;i<lines.length; i++){
@@ -137,7 +137,9 @@ for (r=0; r<RawFilePaths.length; r++){
 			//Rename the bead Rois with the beads' names
 			CurrentRoi=roiManager("count")-1;
 			roiManager("select", CurrentRoi);
-			roiManager("rename", Raw_Names[r]+"_"+bead);
+			//roiManager("rename", Raw_Names[r]+"_"+bead);
+			run("Duplicate...", "title=["+Raw_Names[r]+"_"+bead+"] duplicate");
+			bead_img=getImageID();
 			//Find for every bead the result measurement from summary.xls
 			Res="";
 			R="";
@@ -154,30 +156,35 @@ for (r=0; r<RawFilePaths.length; r++){
 			//Split the &-separated resolutions and Rs in arrays
 			Resolution=split(Res, "&");
 			R_two=split(R, "&");
-			
+			selectImage(bead_img);
+			ImageID=Ext.importImage(DatasetID);
+			print("Import to Omero for image ID " + ImageID + ": " +Raw_Names[r]+"_"+bead);
 			//Make the results table. Make the strings --> numbers
-			setResult("Image Name", resultsCounter, Raw_Names[r]);
-			setResult("ROI", resultsCounter, call("ij.plugin.frame.RoiManager.getName", CurrentRoi));
-			setResult("Dataset", resultsCounter, Ext.getName("Dataset", DatasetID));
-			setResult("Project", resultsCounter, Ext.getName("Project", ProjectID));
-			setResult("X Res", resultsCounter, parseFloat(Resolution[0]));
-			setResult("X R2", resultsCounter, parseFloat(R_two[0]));
-			setResult("Y Res", resultsCounter, parseFloat(Resolution[1]));
-			setResult("Y R2", resultsCounter, parseFloat(R_two[1]));
-			setResult("Z Res", resultsCounter, parseFloat(Resolution[2]));
-			setResult("Z R2", resultsCounter, parseFloat(R_two[2]));
+			setResult("Image Name", 0, Raw_Names[r]+"_"+bead);
+			setResult("Dataset", 0, Ext.getName("Dataset", DatasetID));
+			setResult("X Res", 0, parseFloat(Resolution[0]));
+			setResult("X R2", 0, parseFloat(R_two[0]));
+			setResult("Y Res", 0, parseFloat(Resolution[1]));
+			setResult("Y R2", 0, parseFloat(R_two[1]));
+			setResult("Z Res", 0, parseFloat(Resolution[2]));
+			setResult("Z R2", 0, parseFloat(R_two[2]));
 			updateResults();
+			Ext.addToTable("FWHM_Results", "Results", ImageID); // The results contents of each raw file are added to the Omero Table
+			run("Clear Results");
 			resultsCounter++;
+			roiManager("reset");
+			close(bead_img);
 		}
 	}
 	//If there are any analysed beads for the raw file, then the image , with the Rois is imported to Omero
-	if(AnalysedBeads){
-		nRois=Ext.saveROIs(ImageID, "");
-		print("Image " + Raw_Names[r] + ": " + nRois + " ROI(s) saved.");
+/*	if(AnalysedBeads){
+		//nRois=Ext.saveROIs(ImageID, "");
+	//	print("Image " + Raw_Names[r] + ": " + nRois + " ROI(s) saved.");
 		print("\n***************************************************************\n");
-		Ext.addToTable("FWHM_Results", "Results", ImageID, ""); // The results contents of each raw file are added to the Omero Table
+//		Ext.addToTable("FWHM_Results", "Results", ImageID); // The results contents of each raw file are added to the Omero Table
 		run("Clear Results");
 	}
+	*/
 	roiManager("reset");
 	run("Close All");
 }
@@ -187,7 +194,7 @@ for (r=0; r<RawFilePaths.length; r++){
 Ext.saveTable("FWHM_Results", "Project", ProjectID);
 txt_file = getDir("temp") +DatasetID+"_fwhm_results.csv";
 Ext.saveTableAsFile("FWHM_Results", txt_file, ",");
-file_id = Ext.addFile("Dataset", DatasetID, txt_file);
+file_id = Ext.addFile("Project", ProjectID, txt_file);
 deleted = File.delete(txt_file);
 summaryPDF_ID=Ext.addFile("Dataset", DatasetID, dir_proc+ExperimentName+"summary.pdf");
 summaryXLS_ID=Ext.addFile("Dataset", DatasetID, dir_proc+ExperimentName+"summary.xls");
