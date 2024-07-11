@@ -1,8 +1,20 @@
-// @File (label="Choose a root Directory with raw images ", style="directory") dir
-// @String(label="Host", value='wss://workshop.openmicroscopy.org/omero-ws') omrsrv
+// @String (visibility=MESSAGE, value="<html><h1>Upload MetroloJ results to Omero</h1></html>", required=false) head
+// @String (visibility=MESSAGE, value="<html><h2>Omero Login Info</h2></html>", required=false) msg
+// @String(label="Host", value='omero.quarep.org') omrsrv
 // @Integer(label="Port", value=4064) omrport
 // @String(label="Omero Username", style="Text Field") omrusr
 // @String(label="Password", style='password', persist=false) omrpwd
+// @String (visibility=MESSAGE, value="", required=false) msg11
+// @String (visibility=MESSAGE, value="<html><h2>Upload Information</html></h2>", required=false) msg2
+// @File (label="Choose a root Directory with raw images ", style="directory") dir
+// @String (choices={"---", "100x", "63x", "60x", "40x"}, style="listBox") Magnification
+// @Double (value=1.4, min=0.4, max=1.5, stepSize=0.01, persist=false, style="slider,format:0.00") NA
+// @String (choices={"wg05", "wg04", "wg03", "wg01", "wg06"}, style="listBox") Workgroup
+// @String (choices={"LSM", "WFM", "SD"}, style="listBox") Modality
+// @Integer (label="Instrument Indentifier", value=00000000, persist=false) InstrumentIdent
+// @String (choices={"PSF", "---", "---", "---", "---"}, style="listBox") QCType
+// @String (choices={"FWHM", "---", "---", "---", "---"}, style="listBox") QCSubType
+// @java.util.Date AcquisitionDate
 // @String(label="Omero Project", style="Text Field") omrProject
 // @Boolean(label="Batch Mode", value=false) batch
 
@@ -39,7 +51,19 @@
  * 
  */
 requires("1.54f");
-Macro_version=1.3;
+Macro_version=1.31;
+NumAp=NA;
+//Fixing the date format
+date=split(AcquisitionDate, " ");
+month=(indexOf("JanFebMarAprMayJunJulAugSepOctNovDec", date[1]))/3;
+month++;
+if(month<10){month="0"+month;}
+AcqDate=date[5]+"-"+month+"-"+date[2];
+//
+//User: First letter of first name and three first letters of surname (taken by Omero username)
+user=substring(omrusr, 0, 4);
+
+
 if(batch){
 	setBatchMode(true);
 }
@@ -107,7 +131,8 @@ print("\n\nStart with raw files....\n");
 run("Clear Results");
 AnalysedBeads=false;
 for (r=0; r<RawFilePaths.length; r++){
-	open(RawFilePaths[r]);
+	//open(RawFilePaths[r]);
+	run("Bio-Formats Importer", "open=["+RawFilePaths[r]+"] autoscale color_mode=Default view=Hyperstack stack_order=XYCZT");
 	img=getImageID();
 	roiManager("reset");
 	run("Clear Results");
@@ -133,6 +158,7 @@ for (r=0; r<RawFilePaths.length; r++){
 			AnalysedBeads=true;
 			run("Select None");
 			makeRoi(X, Y, Z, img);
+			Roi.setPosition(0, Z, 0);
 			roiManager("add");
 			//Rename the bead Rois with the beads' names
 			CurrentRoi=roiManager("count")-1;
@@ -158,14 +184,25 @@ for (r=0; r<RawFilePaths.length; r++){
 			//Make the results table. Make the strings --> numbers
 			setResult("Image Name", resultsCounter, Raw_Names[r]);
 			setResult("ROI", resultsCounter, call("ij.plugin.frame.RoiManager.getName", CurrentRoi));
-			setResult("Dataset", resultsCounter, Ext.getName("Dataset", DatasetID));
-			setResult("Project", resultsCounter, Ext.getName("Project", ProjectID));
+			setResult("Acquisition Date", resultsCounter, AcqDate);
+			setResult("Microscopy Modality", resultsCounter, Modality);
+			setResult("Microscope Identifier", resultsCounter, InstrumentIdent);
+			setResult("Magnification", resultsCounter, Magnification);
+			setResult("Numerical Aperture", resultsCounter, NumAp);
+			setResult("Workgroup", resultsCounter, Workgroup);
+			setResult("QC Type", resultsCounter, QCType);
+			setResult("QC Subtype", resultsCounter, QCSubType);
+			setResult("Workgroup", resultsCounter, Workgroup);
 			setResult("X Res", resultsCounter, parseFloat(Resolution[0]));
 			setResult("X R2", resultsCounter, parseFloat(R_two[0]));
 			setResult("Y Res", resultsCounter, parseFloat(Resolution[1]));
 			setResult("Y R2", resultsCounter, parseFloat(R_two[1]));
 			setResult("Z Res", resultsCounter, parseFloat(Resolution[2]));
 			setResult("Z R2", resultsCounter, parseFloat(R_two[2]));
+			setResult("Dataset Name", resultsCounter, Ext.getName("Dataset", DatasetID));
+//			setResult("Project ID", resultsCounter, DatasetID);
+			setResult("Project Name", resultsCounter, Ext.getName("Project", ProjectID));
+//			setResult("Dataset ID", resultsCounter, ProjectID);
 			updateResults();
 			resultsCounter++;
 		}
@@ -184,7 +221,8 @@ for (r=0; r<RawFilePaths.length; r++){
 //After all Raw files are processed and imported to Omero, then the Results table is saved as an
 //Omero table and as a.txt tab-separated file attachement on the Dataset level.
 //The summary .pdf is also attached on the Dataset level
-Ext.saveTable("FWHM_Results", "Project", ProjectID);
+//Ext.saveTable("FWHM_Results", "Project", ProjectID);
+Ext.saveTable("FWHM_Results", "Dataset", DatasetID);
 txt_file = getDir("temp") +DatasetID+"_fwhm_results.csv";
 Ext.saveTableAsFile("FWHM_Results", txt_file, ",");
 file_id = Ext.addFile("Dataset", DatasetID, txt_file);
