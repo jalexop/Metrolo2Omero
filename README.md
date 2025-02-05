@@ -19,9 +19,9 @@ Subsequently, the Results is uploaded as an Omero table and as a .csv file,  tog
 <h2>Installation</h2>
 Drag and drop the .ijm file at the status bar of Fiji window.
 Before running the macro, it is essential to have installed in Fiji:
-<ul>A compatible version of omero insight plugin downloaded from <a href="https://www.openmicroscopy.org/omero/downloads/">OME-Downloads</a>. Current tested version is <a href="https://github.com/ome/omero-insight/releases/download/v5.8.4/omero_ij-5.8.4-all.jar">5.8.4</a></ul>
-<ul>The simple-omero-client plugin: Current tested version <a href="https://github.com/GReD-Clermont/simple-omero-client/releases/tag/5.16.0/">5.16.0</a>.</ul>
-<ul>The omero-macro-extensions plugin: Current tested version <a href="https://github.com/GReD-Clermont/omero_macro-extensions/releases/tag/1.3.3/">1.3.3</a>.</ul>
+<ul>A compatible version of omero insight plugin downloaded from <a href="https://www.openmicroscopy.org/omero/downloads/">OME-Downloads</a>. Current tested version is <a href="https://github.com/ome/omero-insight/releases/download/v5.8.6/omero_ij-5.8.6-all.jar">5.8.6</a></ul>
+<ul>The simple-omero-client plugin: Current tested version <a href="https://github.com/GReD-Clermont/simple-omero-client/releases/tag/5.19.0">5.19.0</a>.</ul>
+<ul>The omero-macro-extensions plugin: Current tested version <a href="https://github.com/GReD-Clermont/omero_macro-extensions/releases/tag/1.4.0">1.4.0</a>.</ul>
 <br><br>
 <hr>
 <h2>User Interface - Running the macro</h2>
