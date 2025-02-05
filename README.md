@@ -28,4 +28,4 @@ Before running the macro, it is essential to have installed in Fiji:
 <p>Running the macro will start with the user input interface as seen at the figure below.
 The interface has two parts. The first part is used for the login information necessary to connect to an omero server.</p>
 <br><br>
-<img width="400" alt="OmeroUploader_GUI" src="https://github.com/user-attachments/assets/d9ae9227-bfd7-4139-920b-312c5b56e0f8">
+<img width="400" alt="OmeroUploader_GUI" src="">
