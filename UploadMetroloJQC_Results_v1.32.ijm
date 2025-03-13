@@ -7,7 +7,7 @@
 // @String (visibility=MESSAGE, value="", required=false) msg11
 // @String (visibility=MESSAGE, value="<html><h2>Upload Information</html></h2>", required=false) msg2
 // @File (label="Choose a root Directory with raw images ", style="directory") dir
-// @String (choices={"wg05", "wg04", "wg03", "wg01", "wg06", "---"}, style="listBox") Workgroup
+// @String (choices={"wg-05", "wg-04", "wg-03", "wg-01", "wg-06", "---"}, style="listBox") Workgroup
 // @String (choices={"LSM", "WFM", "SD"}, style="listBox") Modality
 // @String(label="Experiment Number", style="0001") ZZZZ
 // @Integer (label="Instrument Indentifier", value=00000000, persist=false) InstrumentIdent
