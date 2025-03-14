@@ -79,7 +79,7 @@ Macro_version=1.32;
 if(Workgroup=="---"){
 	Workgroup="";
 }
-omrProject=Workgroup+"-"+ZZZZ+"_"+Modality+"_"+QCType+"_"+QCSubType;
+omrProject=replace(Workgroup, "-", "")+"-"+ZZZZ+"_"+Modality+"_"+QCType+"_"+QCSubType;
 //Fixing the date format
 //date=split(AcquisitionDate, " ");
 //month=(indexOf("JanFebMarAprMayJunJulAugSepOctNovDec", date[1]))/3;
