@@ -80,6 +80,10 @@ if(Workgroup=="---"){
 	Workgroup="";
 }
 omrProject=replace(Workgroup, "-", "")+"-"+ZZZZ+"_"+Modality+"_"+QCType+"_"+QCSubType;
+//getDateAndTime(year, month, dayOfWeek, dayOfMonth, hour, minute, second, msec);
+//omrProject="WS_38_Alexopoulos_Nelson"+"-"+year+""+month+1+""+dayOfMonth+"_"+hour+""+minute;
+//omrProject="WS_38_Alexopoulos_Nelson";
+//print (omrProject);
 //Fixing the date format
 //date=split(AcquisitionDate, " ");
 //month=(indexOf("JanFebMarAprMayJunJulAugSepOctNovDec", date[1]))/3;
@@ -94,7 +98,7 @@ setBatchMode(true);
 //Global variables
 sep=File.separator;
 lineseparator = "\n";
-cellseparator = "\t";
+cellseparator = "	";
 dir=dir+sep;
 dir_proc=dir +"Processed/";
 
@@ -214,7 +218,8 @@ for (r=0; r<RawFilePaths.length; r++){
 
 	searchString=Raw_Names[r];					
 	RawNameSearch=Raw_Names[r];
-	searchString=replace(searchString, " - ", "-");  //MetroloJQC Processes the Image Names and removes spaces when the names are combined with the beadID at the summary.xls
+	searchString=replace(searchString, " - ", "-");
+	searchString=replace(searchString, " ", "");//MetroloJQC Processes the Image Names and removes spaces when the names are combined with the beadID at the summary.xls
 	noBeads=NoOfBeads(summaryLines, RawNameSearch);
 	if(noBeads>0){
 		AnalysedBeads=true;
@@ -352,7 +357,7 @@ function countRawFiles(dir) {
 	countRaw = 0;
    list = getFileList(dir);
    for (i=0; i<list.length; i++) {
-       if (endsWith(list[i], ".tif") ||endsWith(list[i], ".tiff")||endsWith(list[i], ".czi")||endsWith(list[i], ".nd2")){
+       if (endsWith(list[i], ".tif") ||endsWith(list[i], ".tiff")||endsWith(list[i], ".czi")||endsWith(list[i], ".nd2")||endsWith(list[i], ".oir")){
 	       countRaw++;
        }
    }
@@ -372,7 +377,7 @@ function FindRawFilePaths(dir, countRaw) {
 	list = getFileList(dir);
 	n=0;
 	for (i=0; i<list.length; i++) {
-		if (endsWith(list[i], ".tif") ||endsWith(list[i], ".tiff")||endsWith(list[i], ".czi")||endsWith(list[i], ".nd2")){
+		if (endsWith(list[i], ".tif") ||endsWith(list[i], ".tiff")||endsWith(list[i], ".czi")||endsWith(list[i], ".nd2")||endsWith(list[i], ".oir")){
 			RawFilePaths[n] = dir+list[i];
 			showProgress(n++, countRaw);
 		}
@@ -386,11 +391,18 @@ function FindRawFileNames(dir, countRaw) {
 	list = getFileList(dir);
 	n=0;
 	for (i=0; i<list.length; i++) {
-		if (endsWith(list[i], ".tif") ||endsWith(list[i], ".tiff")||endsWith(list[i], ".czi")||endsWith(list[i], ".nd2")){
-			list[i]=replace(list[i], ".tif", "");
-			list[i]=replace(list[i], ".tiff", "");
-			list[i]=replace(list[i], ".czi", "");
-			list[i]=replace(list[i], ".nd2", "");
+		if (endsWith(list[i], ".tif") ||endsWith(list[i], ".tiff")||endsWith(list[i], ".czi")||endsWith(list[i], ".nd2")||endsWith(list[i], ".oir")){
+//			list[i]=substring(list[i], 0, lastIndexOf(list[i], ".tif"));
+//			list[i]=substring(list[i], 0, lastIndexOf(list[i], ".tiff"));
+//			list[i]=substring(list[i], 0, lastIndexOf(list[i], ".czi"));
+//			list[i]=substring(list[i], 0, lastIndexOf(list[i], ".nd2"));
+//			list[i]=substring(list[i], 0, lastIndexOf(list[i], ".oir"));
+//			list[i]=replace(list[i], ".tif", "");
+//			list[i]=replace(list[i], ".tiff", "");
+//			list[i]=replace(list[i], ".czi", "");
+//			list[i]=replace(list[i], ".nd2", "");
+//			list[i]=replace(list[i], ".oir", "");
+			list[i]=File.getNameWithoutExtension(list[i]);
 			Raw_Names[n]=list[i];
 			showProgress(n++, countRaw);
 		}
